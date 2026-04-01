@@ -4,7 +4,7 @@ import { sendEmail } from './email';
 import { ProjectWithMembers } from '@/types/project';
 
 const ACTIVE_WINDOW_MS = (Number(process.env.ACTIVE_WINDOW_MS)
-  || (Number(process.env.ACTIVE_WINDOW_MINUTES) || 5) * 60 * 1000);
+  || (Number(process.env.ACTIVE_WINDOW_MINUTES) || 2) * 60 * 1000);
 
 export async function notifyTicketUpdate(ticketId: string, projectId: string, updaterEmail: string, action: 'created' | 'updated' | 'status_changed' = 'updated', ticketTitle?: string, newStatus?: string) {
   try {

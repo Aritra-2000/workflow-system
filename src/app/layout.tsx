@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ticket Dashboard",
-  description: "A Trello-style project management dashboard with real-time updates",
+  title: "ZenithTask Dashboard",
+  description: "A professional project management dashboard with real-time updates",
 };
 
 export default function RootLayout({

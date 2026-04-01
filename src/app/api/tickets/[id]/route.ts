@@ -51,11 +51,15 @@ export async function DELETE(
       return new NextResponse('Ticket not found', { status: 404 });
     }
 
+    // Check if user is a Super User (via secret header)
+    const superUserPass = request.headers.get('x-superuser-pass');
+    const isSuperUser = superUserPass === process.env.SUPER_USER_PASSWORD;
+
     // Check if user is the project creator or has admin/maintainer role
     const isProjectCreator = ticket.Project.creator?.id === currentUser.id;
     const isProjectAdmin = ticket.Project.members.length > 0;
 
-    if (!isProjectCreator && !isProjectAdmin) {
+    if (!isProjectCreator && !isProjectAdmin && !isSuperUser) {
       return new NextResponse('Forbidden: You do not have permission to delete this ticket', { status: 403 });
     }
 

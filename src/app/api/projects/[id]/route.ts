@@ -18,6 +18,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Check if user is a Super User (via secret header)
+    const superUserPass = req.headers.get('x-superuser-pass');
+    const isSuperUser = superUserPass === process.env.SUPER_USER_PASSWORD;
+
+    if (!isSuperUser) {
+      return NextResponse.json({ error: "Forbidden: Only Super Users can delete projects" }, { status: 403 });
+    }
+
     // Perform cascading deletes in a transaction to satisfy FK constraints
     await prisma.$transaction(async (tx) => {
       // 1) Delete ticket updates for all tickets in the project
