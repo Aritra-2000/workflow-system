@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { ChevronDown, Trash2, HelpCircle, FolderOpen, Layers, Plus, ShieldCheck, ShieldAlert, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, Trash2, FolderOpen, Layers, Plus, ShieldCheck, ShieldAlert, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useSuperUserStore } from '@/store/useSuperUserStore';
 import SuperUserModal from './SuperUserModal';

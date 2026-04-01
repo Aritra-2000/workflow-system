@@ -7,7 +7,7 @@ import NotificationBell from '@/components/dashboard/NotificationBell';
 import ActiveUsersBadge from '@/components/dashboard/ActiveUsersBadge';
 import Loading from '@/app/loading';
 import { useSuperUserStore } from '@/store/useSuperUserStore';
-import { ShieldCheck, User as UserIcon, Menu as MenuIcon } from 'lucide-react';
+import { ShieldCheck, User as UserIcon } from 'lucide-react';
 import SuperUserModal from '@/components/dashboard/SuperUserModal';
 
 function DashboardContent() {

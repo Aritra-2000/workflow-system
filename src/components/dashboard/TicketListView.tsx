@@ -1,12 +1,14 @@
 import React from 'react';
 import { Flag, Clock, User as UserIcon } from 'lucide-react';
 
+import { Ticket } from '@/types/ticket';
+
 export default function TicketListView({ 
   tickets, 
   onTicketClick 
 }: { 
-  tickets: any[]; 
-  onTicketClick: (ticket: any) => void;
+  tickets: Ticket[]; 
+  onTicketClick: (ticket: Ticket) => void;
 }) {
   return (
     <div className="p-6 h-full overflow-y-auto bg-gray-50/50">
