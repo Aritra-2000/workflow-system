@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getCurrentUser, getCurrentUserFromHeaders } from '@/lib/auth';
 
-// Active window (match notification-service: 5 minutes)
-const ACTIVE_WINDOW_MS = 5 * 60 * 1000;
+// Active window (match notification-service: 2 minutes)
+const ACTIVE_WINDOW_MS = 2 * 60 * 1000;
 
 // CORS headers
 const corsHeaders = {

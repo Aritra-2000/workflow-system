@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function Home() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"email"|"otp"|"done">("email");
@@ -21,8 +24,11 @@ export default function Home() {
       });
       if (!res.ok) throw new Error('Failed to request OTP');
       setStep('otp');
+      toast.success('OTP sent to your email!');
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
+      const errorMsg = e instanceof Error ? e.message : 'Something went wrong';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -44,9 +50,12 @@ export default function Home() {
       }
       
       setStep('done');
-      window.location.href = '/dashboard';
+      toast.success('Login successful!');
+      router.push('/dashboard');
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Something went wrong');
+      const errorMsg = e instanceof Error ? e.message : 'Something went wrong';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

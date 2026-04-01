@@ -1,10 +1,10 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { verifyOtp } from '@/lib/otp';
 import jwt from 'jsonwebtoken';
-import { serialize } from 'cookie';
 
 export async function POST(request: Request) {
   try {
@@ -43,7 +43,8 @@ export async function POST(request: Request) {
       name: updated.name || updated.email.split('@')[0] // Use name if available, otherwise use email username
     }, jwtSecret, { expiresIn: '7d' });
 
-    const cookie = serialize('session', token, {
+    const cookieStore = await cookies();
+    cookieStore.set('session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -54,9 +55,7 @@ export async function POST(request: Request) {
     console.log('Setting session cookie for user:', updated.email);
     console.log('JWT_SECRET configured:', !!jwtSecret);
 
-    const res = NextResponse.json({ ok: true, userId: updated.id });
-    res.headers.set('Set-Cookie', cookie);
-    return res;
+    return NextResponse.json({ ok: true, userId: updated.id });
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 });
   }

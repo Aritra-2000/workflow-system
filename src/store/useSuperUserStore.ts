@@ -3,12 +3,14 @@ import { create } from "zustand";
 
 export type SuperUserState = {
   enabled: boolean;
+  pass: string | null;
   enable: (password: string) => Promise<boolean>;
   disable: () => void;
 };
 
 export const useSuperUserStore = create<SuperUserState>((set) => ({
   enabled: typeof window !== "undefined" && localStorage.getItem("superuser") === "true",
+  pass: typeof window !== "undefined" ? localStorage.getItem("superuser-pass") : null,
 
   enable: async (password: string) => {
     try {
@@ -20,12 +22,14 @@ export const useSuperUserStore = create<SuperUserState>((set) => ({
 
       const data = await res.json();
       if (data.ok) {
-        set({ enabled: true });
+        set({ enabled: true, pass: password });
         localStorage.setItem("superuser", "true");
+        localStorage.setItem("superuser-pass", password);
         return true;
       } else {
-        set({ enabled: false });
+        set({ enabled: false, pass: null });
         localStorage.removeItem("superuser");
+        localStorage.removeItem("superuser-pass");
         return false;
       }
     } catch (err) {
@@ -36,7 +40,8 @@ export const useSuperUserStore = create<SuperUserState>((set) => ({
   },
 
   disable: () => {
-    set({ enabled: false });
+    set({ enabled: false, pass: null });
     localStorage.removeItem("superuser");
+    localStorage.removeItem("superuser-pass");
   },
 }));

@@ -28,6 +28,7 @@ model User {
   projects      Project[]         @relation("UserProjects")
   projectMembers ProjectMember[]
   ticketUpdates TicketUpdate[]
+  assignedTickets Ticket[]
 }
 
 model Project {
@@ -64,9 +65,16 @@ model Ticket {
   status        String   @default("todo")
   updatedBy     String?
   updatedAt     DateTime @default(now())
+  
+  priority      String   @default("normal")
+  dueDate       DateTime?
+  assigneeId    String?
+  checklists    Json?    @default("[]")
+  
   updates       TicketUpdate[]
 
-  Project       Project  @relation(fields: [projectId], references: [id])
+  Project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee      User?    @relation(fields: [assigneeId], references: [id])
 }
 
 model Activity {

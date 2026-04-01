@@ -41,12 +41,38 @@ export function useNotifications(projectId: string) {
     // Initialize Pusher channel for real-time updates
     const channel = pusherClient.subscribe(`project-${projectId}`);
 
-    const handleTicketUpdated = (data: { id?: string; ticketId?: string; updatedBy?: string }) => {
+    const handleTicketUpdated = (data: { 
+      id?: string; 
+      ticketId?: string; 
+      updatedBy?: string; 
+      actorName?: string; 
+      ticketTitle?: string; 
+      status?: string;
+      changedFields?: string[];
+    }) => {
       if (data.updatedBy && currentEmail && data.updatedBy === currentEmail) return; // Don't notify self
+      
+      const actor = data.actorName || data.updatedBy?.split('@')[0] || 'someone';
+      const title = data.ticketTitle || 'a task';
+      
+      let actionText = 'updated';
+      if (Array.isArray(data.changedFields) && data.changedFields.length > 0) {
+        if (data.changedFields.includes('status')) {
+          actionText = `moved "${title}" to ${data.status?.replace('_', ' ')}`;
+        } else if (data.changedFields.length === 1) {
+          actionText = `updated the ${data.changedFields[0]} of "${title}"`;
+        } else {
+          actionText = `updated multiple fields of "${title}"`;
+        }
+      } else if (data.status) {
+        actionText = `moved "${title}" to ${data.status.replace('_', ' ')}`;
+      } else {
+        actionText = `updated "${title}"`;
+      }
       
       const notification: Notification = {
         id: Date.now().toString(),
-        message: `Ticket #${data.id || data.ticketId || ''} was updated by ${data.updatedBy || 'someone'}`,
+        message: `${actor} ${actionText}`,
         timestamp: new Date().toISOString(),
         read: false
       };
@@ -54,10 +80,11 @@ export function useNotifications(projectId: string) {
       setNotifications(prev => [notification, ...prev]);
       setUnreadCount(prev => prev + 1);
       
-      // Show toast notification
+      // Show toast notification with unique ID to ensure a fresh toast for every update
       toast(notification.message, {
+        id: `ticket-upd-${notification.id}`,
         position: 'top-right',
-        duration: 5000,
+        duration: 4000,
       });
     };
 
@@ -66,7 +93,7 @@ export function useNotifications(projectId: string) {
 
     // Cleanup
     return () => {
-      channel.unbind('ticket-updated', handleTicketUpdated);
+      channel.unbind('ticket:updated', handleTicketUpdated);
       pusherClient.unsubscribe(`project-${projectId}`);
     };
   }, [projectId, currentEmail, fetchUnreadCount]);
