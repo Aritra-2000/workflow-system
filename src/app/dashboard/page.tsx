@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Sidebar from '@/components/dashboard/Sidebar';
 import KanbanBoard from '@/components/dashboard/KanbanBoard';
@@ -18,8 +18,13 @@ function DashboardContent() {
   const [viewType, setViewType] = useState<'board' | 'list'>('board');
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const { enabled: isSuperUser } = useSuperUserStore();
+  const { enabled: storeIsSuperUser } = useSuperUserStore();
+  const [mounted, setMounted] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setMounted(true), []);
+
+  const isSuperUser = mounted ? storeIsSuperUser : false;
   const handleProjectSelect = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('project', id);

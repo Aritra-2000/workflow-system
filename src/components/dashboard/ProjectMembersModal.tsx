@@ -37,8 +37,8 @@ export default function ProjectMembersModal({ projectId, onClose }: ProjectMembe
       if (!res.ok) throw new Error('Failed to fetch members');
       const data = await res.json();
       setMembers(data);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error('Failed to fetch members');
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +86,7 @@ export default function ProjectMembersModal({ projectId, onClose }: ProjectMembe
       
       setMembers(prev => prev.filter(m => m.memberId !== memberId));
       toast.success('Member removed');
-    } catch (err) {
+    } catch {
       toast.error('Error removing member');
     }
   }

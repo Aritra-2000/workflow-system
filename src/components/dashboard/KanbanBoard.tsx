@@ -19,7 +19,6 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useProjectPusher } from "@/hooks/useSocket";
-import { useSuperUserStore } from "@/store/useSuperUserStore";
 import { toast } from "react-hot-toast";
 import Loading from "@/app/loading";
 import RichTextEditor from "./RichTextEditor";

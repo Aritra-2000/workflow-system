@@ -33,8 +33,11 @@ export default function EditTaskModal({
   const [users, setUsers] = useState<User[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { enabled: isSuperUser, pass: superUserPass } = useSuperUserStore();
+  const { enabled: storeIsSuperUser, pass: superUserPass } = useSuperUserStore();
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isSuperUser = mounted ? storeIsSuperUser : false;
   useEffect(() => {
     if (ticket.projectId) {
       fetch(`/api/projects/${ticket.projectId}/members`, {

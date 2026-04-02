@@ -29,7 +29,14 @@ export default function Sidebar({ selectedProject, onProjectSelect, refreshTrigg
   const [creatingProject, setCreatingProject] = useState(false);
   const [logoClickCount, setLogoClickCount] = useState(0);
   const [showAdminModal, setShowAdminModal] = useState(false);
-  const { enabled: isSuperUser, disable: disableSuperUser, pass: superUserPass } = useSuperUserStore();
+  const { enabled: storeIsSuperUser, disable: disableSuperUser, pass: superUserPass } = useSuperUserStore();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isSuperUser = mounted ? storeIsSuperUser : false;
 
   useEffect(() => {
     // Load projects from API
