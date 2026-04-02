@@ -21,7 +21,6 @@ function DashboardContent() {
   const { enabled: storeIsSuperUser } = useSuperUserStore();
   const [mounted, setMounted] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setMounted(true), []);
 
   const isSuperUser = mounted ? storeIsSuperUser : false;
