@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import { X, Calendar, User as UserIcon, Flag, CheckSquare, Plus, Trash2, Clock, CheckCircle, ShieldAlert } from "lucide-react";
+import { X, Calendar, User as UserIcon, Flag, CheckSquare, Trash2, CheckCircle } from "lucide-react";
 import RichTextEditor from "./RichTextEditor";
 import { toast } from "react-hot-toast";
 import { useSuperUserStore } from "@/store/useSuperUserStore";
-import { apiPatch, apiPost } from "@/lib/api-client";
+import { Ticket, User, ChecklistItem } from "@/types/ticket";
 
-type User = { id: string; email: string; name: string | null; image: string | null };
-type ChecklistItem = { id: string; title: string; completed: boolean };
 
 export default function EditTaskModal({ 
   ticket, 
@@ -14,10 +12,10 @@ export default function EditTaskModal({
   onClose, 
   onUpdate 
 }: { 
-  ticket: any; 
+  ticket: Ticket; 
   isCreator?: boolean;
   onClose: () => void;
-  onUpdate: (updatedTicket: any) => void;
+  onUpdate: (updatedTicket: Ticket & { _deleted?: boolean }) => void;
 }) {
   const [title, setTitle] = useState(ticket.title);
   const [description, setDescription] = useState(ticket.description || "");
@@ -35,8 +33,11 @@ export default function EditTaskModal({
   const [users, setUsers] = useState<User[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { enabled: isSuperUser, pass: superUserPass } = useSuperUserStore();
+  const { enabled: storeIsSuperUser, pass: superUserPass } = useSuperUserStore();
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isSuperUser = mounted ? storeIsSuperUser : false;
   useEffect(() => {
     if (ticket.projectId) {
       fetch(`/api/projects/${ticket.projectId}/members`, {

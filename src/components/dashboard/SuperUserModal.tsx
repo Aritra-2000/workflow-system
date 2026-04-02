@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { X, ShieldAlert, Lock, CheckCircle2 } from "lucide-react";
+import { ShieldAlert, Lock, CheckCircle2 } from "lucide-react";
 import { useSuperUserStore } from "@/store/useSuperUserStore";
 import { toast } from "react-hot-toast";
 
@@ -26,7 +26,7 @@ export default function SuperUserModal({ onClose }: SuperUserModalProps) {
       } else {
         toast.error("Invalid admin password");
       }
-    } catch (err) {
+    } catch {
       toast.error("Verification failed");
     } finally {
       setIsVerifying(false);

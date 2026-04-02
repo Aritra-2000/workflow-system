@@ -19,52 +19,15 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useProjectPusher } from "@/hooks/useSocket";
-import { useSuperUserStore } from "@/store/useSuperUserStore";
 import { toast } from "react-hot-toast";
 import Loading from "@/app/loading";
 import RichTextEditor from "./RichTextEditor";
 import EditTaskModal from "./EditTaskModal";
 import ProjectMembersModal from "./ProjectMembersModal";
-import { Users as UsersIcon, Settings as SettingsIcon, Plus, UserPlus, Flag } from "lucide-react";
+import { Users as UsersIcon, UserPlus, Flag } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { Ticket, User } from "@/types/ticket";
 
-// ---------------- Types ----------------
-
-type User = {
-  id: string;
-  name: string | null;
-  email: string;
-  image: string | null;
-};
-
-type UserUpdate = {
-  email: string;
-  timestamp: string;
-  status: string;
-};
-
-type Ticket = {
-  id: string;
-  title: string;
-  status: string;
-  description: string;
-  priority: string;
-  dueDate: string | null;
-  assigneeId: string | null;
-  projectId: string;
-  checklists: any;
-  updatedAt: string;
-  updatedBy?: string;
-  updateHistory?: UserUpdate[];
-  updates?: Array<{
-    user?: { email?: string };
-    timestamp?: string;
-    updatedAt?: string;
-    changes?: string | { status?: string };
-  }>;
-  projectCreatorId?: string;
-  assignee?: User | null;
-};
 
 // ---------------- Columns ----------------
 
@@ -119,7 +82,6 @@ export default function KanbanBoard({
   const [showNewTicketForm, setShowNewTicketForm] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   useProjectPusher(projectId);
-  const isSuperUser = useSuperUserStore((state) => state.enabled);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
   const [showMembersModal, setShowMembersModal] = useState(false);
@@ -537,7 +499,7 @@ export default function KanbanBoard({
                                                 ))}
                                                 {projectMembers.length <= 1 && (
                                                   <div className="px-3 py-3 text-center">
-                                                    <p className="text-[9px] text-slate-400 font-medium leading-tight">No other members yet. Invite team via "Manage Team".</p>
+                                                    <p className="text-[9px] text-slate-400 font-medium leading-tight">No other members yet. Invite team via &quot;Manage Team&quot;.</p>
                                                   </div>
                                                 )}
                                               </div>
@@ -641,7 +603,7 @@ export default function KanbanBoard({
           ticket={editingTicket} 
           isCreator={currentUser?.id === editingTicket.projectCreatorId}
           onClose={() => setEditingTicket(null)} 
-          onUpdate={(updated: any) => {
+          onUpdate={(updated: Ticket & { _deleted?: boolean }) => {
             if (updated._deleted) {
               setTickets(prev => prev.filter(t => t.id !== updated.id));
             } else {

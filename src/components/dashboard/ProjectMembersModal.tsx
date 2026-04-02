@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { X, UserPlus, Mail, Trash2, Shield, User as UserIcon, ShieldAlert } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, UserPlus, Mail, Trash2, Shield, User as UserIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useSuperUserStore } from '@/store/useSuperUserStore';
+import Image from 'next/image';
 
 interface Member {
   memberId: string;
@@ -20,17 +21,12 @@ interface ProjectMembersModalProps {
 export default function ProjectMembersModal({ projectId, onClose }: ProjectMembersModalProps) {
   const [members, setMembers] = useState<Member[]>([]);
   const [newMemberEmail, setNewMemberEmail] = useState('');
-  const [newMemberRole, setNewMemberRole] = useState('MEMBER');
+  const [newMemberRole] = useState('MEMBER');
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { enabled: isSuperUser, pass: superUserPass } = useSuperUserStore();
+  const { pass: superUserPass } = useSuperUserStore();
 
-  useEffect(() => {
-    fetchMembers();
-  }, [projectId]);
-
-  async function fetchMembers() {
+  const fetchMembers = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await fetch(`/api/projects/${projectId}/members`, {
@@ -41,13 +37,16 @@ export default function ProjectMembersModal({ projectId, onClose }: ProjectMembe
       if (!res.ok) throw new Error('Failed to fetch members');
       const data = await res.json();
       setMembers(data);
-    } catch (err) {
-      console.error(err);
-      setError('Could not load project members');
+    } catch {
+      console.error('Failed to fetch members');
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [projectId, superUserPass]);
+
+  useEffect(() => {
+    void fetchMembers();
+  }, [fetchMembers]);
 
   async function addMember() {
     if (!newMemberEmail.trim()) return;
@@ -87,7 +86,7 @@ export default function ProjectMembersModal({ projectId, onClose }: ProjectMembe
       
       setMembers(prev => prev.filter(m => m.memberId !== memberId));
       toast.success('Member removed');
-    } catch (err) {
+    } catch {
       toast.error('Error removing member');
     }
   }
@@ -173,7 +172,13 @@ export default function ProjectMembersModal({ projectId, onClose }: ProjectMembe
                   >
                     <div className="flex items-center space-x-4">
                       {member.image ? (
-                        <img src={member.image} alt={member.email} className="w-11 h-11 rounded-2xl object-cover shadow-sm ring-2 ring-white" />
+                        <Image 
+                          src={member.image} 
+                          alt={member.email} 
+                          width={44} 
+                          height={44} 
+                          className="w-11 h-11 rounded-2xl object-cover shadow-sm ring-2 ring-white" 
+                        />
                       ) : (
                         <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-sm uppercase shadow-md shadow-indigo-200/40 ring-2 ring-white">
                           {initials}

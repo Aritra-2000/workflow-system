@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Sidebar from '@/components/dashboard/Sidebar';
 import KanbanBoard from '@/components/dashboard/KanbanBoard';
@@ -7,7 +7,7 @@ import NotificationBell from '@/components/dashboard/NotificationBell';
 import ActiveUsersBadge from '@/components/dashboard/ActiveUsersBadge';
 import Loading from '@/app/loading';
 import { useSuperUserStore } from '@/store/useSuperUserStore';
-import { ShieldCheck, User as UserIcon, Menu as MenuIcon } from 'lucide-react';
+import { ShieldCheck, User as UserIcon } from 'lucide-react';
 import SuperUserModal from '@/components/dashboard/SuperUserModal';
 
 function DashboardContent() {
@@ -18,8 +18,12 @@ function DashboardContent() {
   const [viewType, setViewType] = useState<'board' | 'list'>('board');
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const { enabled: isSuperUser } = useSuperUserStore();
+  const { enabled: storeIsSuperUser } = useSuperUserStore();
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => setMounted(true), []);
+
+  const isSuperUser = mounted ? storeIsSuperUser : false;
   const handleProjectSelect = (id: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('project', id);

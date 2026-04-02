@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { ChevronDown, Trash2, HelpCircle, FolderOpen, Layers, Plus, ShieldCheck, ShieldAlert, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, Trash2, FolderOpen, Layers, Plus, ShieldCheck, ShieldAlert, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useSuperUserStore } from '@/store/useSuperUserStore';
 import SuperUserModal from './SuperUserModal';
@@ -29,7 +29,14 @@ export default function Sidebar({ selectedProject, onProjectSelect, refreshTrigg
   const [creatingProject, setCreatingProject] = useState(false);
   const [logoClickCount, setLogoClickCount] = useState(0);
   const [showAdminModal, setShowAdminModal] = useState(false);
-  const { enabled: isSuperUser, disable: disableSuperUser, pass: superUserPass } = useSuperUserStore();
+  const { enabled: storeIsSuperUser, disable: disableSuperUser, pass: superUserPass } = useSuperUserStore();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isSuperUser = mounted ? storeIsSuperUser : false;
 
   useEffect(() => {
     // Load projects from API
